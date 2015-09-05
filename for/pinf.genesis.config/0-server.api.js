@@ -6,8 +6,6 @@ exports.spin = function (context) {
         var Config = function () {
             var self = this;
 
-console.log("start config parse");
-
             CCJSON.parseFile(
                 context.getPath(),
                 {
@@ -17,12 +15,17 @@ console.log("start config parse");
                             throw new Error("Environment variable '" + name + "' not set!");
                         }
                         return value;
+                    },
+                    on: {
+                        fileNotFound: function (path) {
+
+                            throw new Error("Config file not found: " + path);
+                        }
                     }
                 }
             ).then(function (Config) {
 
-console.log("config", new Config());
-
+//console.log("config", new Config());
 
             });
         }
