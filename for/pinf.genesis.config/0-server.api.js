@@ -1,35 +1,40 @@
 
 exports.spin = function (context) {
+    
+    const CCJSON = require("../../../../lib/ccjson").forLib(context.LIB);
+    
+    var Config = function () {
+        var self = this;
+        
+        var ccjson = new CCJSON();
 
-    return require("../../../../lib/ccjson").forLib(context.LIB).then(function (CCJSON) {
+        ccjson.parseFile(
+            context.getPath(),
+            {
+                env: function (name) {
+                    var value = context.getEnv(name);
+                    if (typeof value === "undefined") {
+                        throw new Error("Environment variable '" + name + "' not set!");
+                    }
+                    return value;
+                },
+                on: {
+                    fileNotFound: function (path) {
 
-        var Config = function () {
-            var self = this;
-
-            CCJSON.parseFile(
-                context.getPath(),
-                {
-                    env: function (name) {
-                        var value = context.getEnv(name);
-                        if (typeof value === "undefined") {
-                            throw new Error("Environment variable '" + name + "' not set!");
-                        }
-                        return value;
-                    },
-                    on: {
-                        fileNotFound: function (path) {
-
-                            throw new Error("Config file not found: " + path);
-                        }
+                        throw new Error("Config file not found: " + path);
                     }
                 }
-            ).then(function (Config) {
+            }
+        ).then(function (Config) {
 
-//console.log("config", new Config());
+            var config = new Config();
+            
+            return context.LIB.Promise.all(context.getBootInstances().map(function (instanceAlias) {
 
-            });
-        }
+                return config.getInstance(instanceAlias).spin();
+            }));
+        });
+    }
 
-        return new Config(context);
-    });
+    return new Config(context);
 }

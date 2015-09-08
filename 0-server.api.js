@@ -18,6 +18,9 @@ exports.forLib = function (LIB) {
             self.getEnv = function (name) {
                 return state.env[name];
             }
+            self.getBootInstances = function () {
+                return state.boot;
+            }
         }
         Context.prototype = Object.create(LIB.EventEmitter.prototype);
 
