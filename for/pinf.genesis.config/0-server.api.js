@@ -19,8 +19,8 @@ exports.spin = function (context) {
                     return value;
                 },
                 on: {
-                    fileNotFound: function (path) {
-
+                    fileNotFound: function (path, optional) {
+                        if (optional) return null;
                         throw new Error("Config file not found: " + path);
                     }
                 }
