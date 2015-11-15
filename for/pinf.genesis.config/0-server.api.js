@@ -1,14 +1,13 @@
 
-exports.spin = function (context) {
+exports.forLib = function (LIB) {
     
-    const CCJSON = require("../../../../lib/ccjson").forLib(context.LIB);
-    
-    var Config = function () {
-        var self = this;
-        
-        var ccjson = new CCJSON();
+    var exports = {};
 
-        ccjson.parseFile(
+    exports.spin = function (context) {
+
+        var ccjson = new LIB.ccjson();
+
+        return ccjson.parseFile(
             context.getPath(),
             {
                 env: function (name) {
@@ -26,15 +25,15 @@ exports.spin = function (context) {
                 }
             }
         ).then(function (Config) {
-
+    
             var config = new Config();
-            
-            return context.LIB.Promise.all(context.getBootInstances().map(function (instanceAlias) {
 
+            return LIB.Promise.all(context.getBootInstances().map(function (instanceAlias) {
+    
                 return config.getInstance(instanceAlias).spin();
             }));
         });
     }
 
-    return new Config(context);
+    return exports;
 }

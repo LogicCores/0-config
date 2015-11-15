@@ -26,7 +26,7 @@ exports.forLib = function (LIB) {
 
         // TODO: Load adapters as needed on demand
         Context.prototype.adapters = {
-            "pinf.genesis.config": require("./for/pinf.genesis.config/0-server.api")
+            "pinf.genesis.config": require("./for/pinf.genesis.config/0-server.api").forLib(LIB)
         };
 
         return {
